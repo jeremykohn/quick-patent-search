@@ -1,0 +1,39 @@
+<html>
+<head>
+	
+	<style>
+		body {
+			height: 100px;
+			width: 200px;
+			background-color: #DDD;
+		}
+		
+		#error-message {
+			display: none;
+			font-color: red;
+		}
+		
+	</style>
+
+	<script src="popup.js"></script>
+
+
+</head>
+
+<body>
+	
+	<h4>Type a U.S. patent number.</h4>
+	
+	
+	<form>
+		<input id="patent-number-entry" type="text">
+		<input id="submit-form" type="submit" value="Search">
+	</form>
+	
+	<h5 id="error-message">That doesn't seem to be a U.S. patent number.</h5>
+	
+	<h5 id="credits">Quick Patent Search, copyright 2014 by Jeremy Kohn. All rights reserved.</h5>
+	
+</body>
+</html>
+	
