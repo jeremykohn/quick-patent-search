@@ -30,16 +30,15 @@
 		if (validFormatUS(number) && (/^[Uu][Ss]/).test(number)) {
 			number = number.slice(2);
 		}
-		console.log(number);
 		return number;
 	}
 
 	function addLeadingZeros(number, targetLength) {
+		var zerosToAdd = targetLength - number.length,
+			i;
 		if ((/[0-9]+/).test(number) === false) {
 		  console.log("Can't add leading zeros. Input number isn't a string with only numeric digits.");
 		}
-		var zerosToAdd = targetLength - number.length,
-			i;
 		for (i = 0; i < zerosToAdd; i += 1) {
 			number = "0" + number;
 		}
@@ -70,7 +69,7 @@
 		return number;
 	}
 	
-	function formatForFullText(number) {
+	function formatNumberForFullText(number) {
 		if (isUtilityPatent(number)) {
 			number = removeLeadingZeros(number);
 		} else if (isDesignPatent(number)) {
@@ -83,9 +82,10 @@
 		return number;
 	}
 
-	function formatForPDF(number) {
+	function formatNumberForPDF(number) {
+		// Eight digits including 0's, and D if any.
 		if (isUtilityPatent(number)) {
-			addLeadingZeros(number, 8);
+			number = addLeadingZeros(number, 8);
 		} else if (isDesignPatent) {
 			number = removeTheD(number);
 			number = addLeadingZeros(number, 7);
@@ -96,7 +96,7 @@
 		return number;
 	}
 
-	function formatForGooglePatents(number) {
+	function formatNumberForGooglePatents(number) {
 		if (isUtilityPatent(number)) {
 			number = removeLeadingZeros(number);
 		} else if (isDesignPatent(number)) {
@@ -110,18 +110,28 @@
 	}
 
 	function urlPatentFullText(number) {
-		number = formatForFullText(number);
-		return "http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r=1&f=G&l=50&co1=AND&d=PALL&s1=" + number + ".PN.&OS=PN/" + number + "&RS=PN/" + number;
+		var fullURL;
+		number = formatNumberForFullText(number);
+		fullURL = "http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r=1&f=G&l=50&co1=AND&d=PALL&s1=" + number + ".PN.&OS=PN/" + number + "&RS=PN/" + number;
+		return fullURL;
 	}
 
 	function urlPatentPDF(number) {
-		number = formatForPDF(number);
-		return "http://pdfpiw.uspto.gov/.piw?PageNum=0&docid=" + number;
+		var urlGroup1, urlGroup2, urlGroup3, fullURL;
+		number = formatNumberForPDF(number);
+		urlGroup1 = number.substring(6);
+		urlGroup2 = number.substring(3,6);
+		urlGroup3 = number.substring(0,3);
+		fullURL = "http://pimg-fpiw.uspto.gov/fdd/" + urlGroup1 + "/" + urlGroup2 + "/" + urlGroup3 + "/" + "0.pdf";
+		// fullURL = "http://pdfpiw.uspto.gov/.piw?PageNum=0&docid=" + number; // Previous version. Leads to page with PDF in a frame.
+		return fullURL;
 	}
 
 	function urlGooglePatents(number) {
-		number = formatForGooglePatents(number);
-		return "http://www.google.com/patents/US" + number;
+		var fullURL;
+		number = formatNumberForGooglePatents(number);
+		fullURL = "http://www.google.com/patents/US" + number;
+		return fullURL;
 	}
 
 	function openURL(urlToOpen) {
@@ -129,9 +139,9 @@
 	}
 
 	function openWebPages(number) {
-		//openURL(urlPatentFullText(number));		
+		//openURL(urlPatentFullText(number)); // Future version.		
 		openURL(urlPatentPDF(number));
-		//openURL(urlGooglePatents(number));
+		//openURL(urlGooglePatents(number)); // Future version.
 	}
 
 	function searchPatents() {		
@@ -146,7 +156,7 @@
 	}
 	
 	
-	// This activates when popup window is opened.
+	// Main function. Activates when popup window is opened.
 	document.addEventListener("DOMContentLoaded", function(){
 		document.getElementById("submit-form").addEventListener("click", searchPatents);
 	});
