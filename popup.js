@@ -1,14 +1,10 @@
-(function() {
+(function () {
 
 	// Copyright 2014 Jeremy Kohn. All rights reserved.
 
 	"use strict";
 	
-	// Do this when input is first received. Then validate, add zeros, etc.
-	function removeCommas(number) {
-		number = number.split(",").join('');
-		return number;
-	}
+	// Check for valid formats.
 	
 	function isUtilityPatent(number) {
 		return (/^([Uu][Ss])?([0-9]{1,8})$/).test(number);
@@ -24,8 +20,10 @@
 	
 	// Adjust number to fit required formats.
 	
-	function removeCommas(number) {
-		return number.replace(/,/g, '');
+	function removeInvalidCharacters(number) {
+		return number.replace(/[\W_]+/g, '');
+		// or
+		// return number.match(/[A-Za-z0-9]+/g).join('');
 	}
 	
 	function removePrefixUS(number) {
@@ -138,7 +136,7 @@
 
 	function searchPatents() {		
 		var number = document.getElementById("patent-number-entry").value;
-		number = removeCommas(number);
+		number = removeInvalidCharacters(number);
 		if (validFormatUS(number)) {
 			number = removePrefixUS(number);
 			openWebPages(number);
