@@ -1,9 +1,7 @@
 Quick Patent Search
 ===================
 
-Chrome extension to quickly search U.S. patents by number. 
-
-Opens the patent's PDF file from the USPTO website.
+Chrome extension to quickly search U.S. patents by number.
 
 Instructions:
 - Click the icon.
