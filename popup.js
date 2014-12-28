@@ -11,22 +11,34 @@
 	}
 	
 	function isUtilityPatent(number) {
-		return (/^[0-9]{1,8}$/).test(number);
-	}
-		
-	function isDesignPatent(number) {
-		return (/^D[0-9]{1,7}$/).test(number);
+		return (/^([Uu][Ss])?([0-9]{1,8})$/).test(number);
 	}
 
-	function validFormat(number) {
+	function isDesignPatent(number) {
+		return (/^([Uu][Ss])?[Dd]([0-9]{1,7})$/).test(number);
+	}
+
+	function validFormatUS(number) {
 		return (isUtilityPatent(number) || isDesignPatent(number));
 	}
 	
 	// Adjust number to fit required formats.
+	
+	function removeCommas(number) {
+		return number.replace(/,/g, '');
+	}
+	
+	function removePrefixUS(number) {
+		if (validFormatUS(number) && (/^[Uu][Ss]/).test(number)) {
+			number = number.slice(2);
+		}
+		console.log(number);
+		return number;
+	}
 
 	function addLeadingZeros(number, targetLength) {
 		if ((/[0-9]+/).test(number) === false) {
-		  console.log("Can't add leading zeros. Input number isn't a string with only numeric digits.");  // (Also return error?)
+		  console.log("Can't add leading zeros. Input number isn't a string with only numeric digits.");
 		}
 		var zerosToAdd = targetLength - number.length,
 			i;
@@ -38,13 +50,13 @@
 	
 	function removeLeadingZeros(number) {
 		if ((/[0-9]+/).test(number) === false) {
-			console.log("Can't remove leading zeros. Input number isn't a string with all numeric digits.");  // (Also return error?)
+			console.log("Can't remove leading zeros. Input number isn't a string with all numeric digits.");
 		}
 		var len = number.length,
 			i;
 		for (i = 0; i < len; i += 1) {
 			if (number[0] === "0") {
-				number = number.slice(0,1);
+				number = number.slice(1); 
 			}
 		}
 		return number;
@@ -52,10 +64,10 @@
 	// Edge case where patent number is 0.
 	
 	function removeTheD(number) {
-		if (isDesignPatent(number)) {
-			number = number.substring(1);
+		if (number[0] === 'D' || number[0] === 'd') {
+			number = number.slice(1);
 		} else {
-			console.log("Can't remove the D. It isn't a design patent number.");
+			console.log("It doesn't start with a D.");
 		}
 		return number;
 	}
@@ -75,7 +87,7 @@
 
 	function formatForPDF(number) {
 		if (isUtilityPatent(number)) {
-			addLeadingZeros(number, 8); // Not strictly necessary? Double-check this on USPTO PDF website.
+			addLeadingZeros(number, 8);
 		} else if (isDesignPatent) {
 			number = removeTheD(number);
 			number = addLeadingZeros(number, 7);
@@ -90,7 +102,6 @@
 		if (isUtilityPatent(number)) {
 			number = removeLeadingZeros(number);
 		} else if (isDesignPatent(number)) {
-			// Remove "D", remove zeros, then re-add "D".
 			number = removeTheD(number);
 			number = removeLeadingZeros(number);
 			number = "D" + number;
@@ -99,8 +110,6 @@
 		}
 		return number;
 	}
-
-
 
 	function urlPatentFullText(number) {
 		number = formatForFullText(number);
@@ -127,16 +136,15 @@
 		//openURL(urlGooglePatents(number));
 	}
 
-	// Does this need to be a variable to be a function argument? No, it can be this way too.
 	function searchPatents() {		
 		var number = document.getElementById("patent-number-entry").value;
 		number = removeCommas(number);
-		if (validFormat(number)) {
+		if (validFormatUS(number)) {
+			number = removePrefixUS(number);
 			openWebPages(number);
 		} else {
 			alert("That doesn't seem to be a U.S. patent number.");
 		}
-
 	}
 	
 	
