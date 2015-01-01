@@ -1,6 +1,6 @@
 (function () {
 
-	// Copyright 2014 Jeremy Kohn. All rights reserved.
+	// Copyright 2014-2015 Jeremy Kohn. All rights reserved.
 
 	"use strict";
 	
