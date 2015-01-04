@@ -2,17 +2,22 @@
 	"manifest_version": 2,
 	"name": "Quick Patent Search",
 	"description": "Quickly find U.S. patents by number.",
-	"version": "0.5",
+	"version": "0.5.1",
 	"browser_action": {
 		"default_icon": "icon-128x128.png",
 		"default_popup": "popup.html"
 	},
 	"background": {
-		"persistent": false
+		"persistent": false,
+		"scripts": ["omnibox.js"]
 	},
 	"icons": {
 		"128": "icon-128x128.png",
 		"48": "icon-48x48.png",
 		"16": "icon-16x16.png"
-	}
+	},
+	"omnibox": {
+		"keyword": "patent"
+	},
+	"permissions": ["tabs"]
 }
