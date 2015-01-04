@@ -9,15 +9,16 @@
 			background-color: #DDD;
 		}
 		
-		#error-message {
+		#message-field {
 			display: none;
 			font-color: red;
 		}
 		
 	</style>
 
+	<script src="search-patents-by-number.js"></script>
 	<script src="popup.js"></script>
-
+	
 </head>
 
 <body>
@@ -28,8 +29,10 @@
 		<input id="patent-number-entry" type="text">
 		<input id="submit-form" type="submit" value="Search">
 	</form>
+
+	<h5 id="message-field"></h5>
 	
-	<h5 id="error-message">That doesn't seem to be a U.S. patent number.</h5>
+	<!-- Additional message field here, displayed if JavaScript is turned off? -->
 	
 </body>
 </html>
