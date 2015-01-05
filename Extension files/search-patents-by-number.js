@@ -141,12 +141,20 @@ var QPS = (function () {
 	}
 	
 	function openURL(urlToOpen) {
-		chrome.tabs.create({url: urlToOpen, active: false}); // Callback if successfully opened tab?
+		chrome.tabs.create({url: urlToOpen, active: false}); // Callback if successfully opened tab? // Previously, active: false
+	}
+
+	function sameWindowOpenURL(urlToOpen) {
+		console.log("Same window open URL");
+		console.log("URL is " + urlToOpen);
+		//window.location.href = "urlToOpen";
+		window.open(urlToOpen, "_self");
 	}
 
 	function openPDF(number) {
 		var formattedNumber = formatNumberForPDF(number);
 		openURL(urlPatentPDF(formattedNumber));
+		// sameWindowOpenURL(urlPatentPDF(formattedNumber)); // Can't get this to work. Might come back to it later.
 	}
 	
 	function openFullText(number) {

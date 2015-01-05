@@ -9,7 +9,7 @@
 	},
 	"background": {
 		"persistent": false,
-		"scripts": ["omnibox.js"]
+		"scripts": ["omnibox.js", "search-patents-by-number.js"]
 	},
 	"icons": {
 		"128": "icon-128x128.png",
