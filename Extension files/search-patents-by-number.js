@@ -4,11 +4,11 @@
 */
 
 var QPS = (function () {
-
+	
 	"use strict";
 	
-	// Patent numbers often include commas, spaces, etc. 
-	// Remove those before continuing.
+	// In the real world, patent numbers are often punctuated with commas, spaces, etc.
+	// Remove those characters before converting the number to a URL.
 	// However, other non-alphanumeric characters should produce an error.
 
 	function removePunctuation(number) {
@@ -188,7 +188,7 @@ var QPS = (function () {
 		originalPatentNumber = patentNumber;
 		patentNumber = removePunctuation(patentNumber);
 		if (validFormatUS(patentNumber) === true) {
-			openPatentList(patentNumber); // Later, ability to add options? Like which formats to open patent in
+			openPatentList(patentNumber);
 			alertMessage = "Opening U.S. patent " + removePrefixUS(patentNumber.toUpperCase()) + ".";
 			alert(alertMessage);
 		} else {
@@ -197,7 +197,6 @@ var QPS = (function () {
 			openPatentsByNumber(newPatentNumber);
 		}
 	}
-	
 	
 	// Finally, return an object containing only the public methods.
 
