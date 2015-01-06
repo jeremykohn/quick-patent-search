@@ -18,11 +18,11 @@ var QPS = (function () {
 	// Check for valid patent number formats.
 	
 	function isUtilityPatent(number) {
-		return (/^([Uu][Ss])?([0-9]{1,8})$/).test(number);
+		return (/^([Uu][Ss])?([0-9]{0,7}[1-9])$/).test(number);
 	}
 	
 	function isDesignPatent(number) {
-		return (/^([Uu][Ss])?[Dd]([0-9]{1,7})$/).test(number);
+		return (/^([Uu][Ss])?[Dd]([0-9]{0,6}[1-9])$/).test(number);
 	}
 	
 	function validFormatUS(number) {
@@ -201,10 +201,14 @@ var QPS = (function () {
 		originalPatentNumber = patentNumber;
 		patentNumber = removePunctuation(patentNumber);
 		if (validFormatUS(patentNumber) === true) {
-			openPatentList(patentNumber);
+			openPatentList(patentNumber); // For now, opens PDF. Add other options later.
 			alert("Opening U.S. patent " + formatNumberForDisplay(patentNumber) + ".");
+		} else if (!originalPatentNumber) {
+			errorMessage = "No patent number entered. Please enter a patent number:";
+			newPatentNumber = window.prompt(errorMessage);
+			openPatentsByNumber(newPatentNumber);
 		} else {
-			errorMessage = "Cannot open patent number " + originalPatentNumber + ". " + "Try another patent number:";
+			errorMessage = "Cannot open patent number \"" + originalPatentNumber + "\". " + "Please try another patent number:";
 			newPatentNumber = window.prompt(errorMessage);
 			openPatentsByNumber(newPatentNumber);
 		}
