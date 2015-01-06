@@ -141,20 +141,22 @@ var QPS = (function () {
 	}
 	
 	function openURL(urlToOpen) {
-		chrome.tabs.create({url: urlToOpen, active: false}); // Callback if successfully opened tab? // Previously, active: false
+		chrome.tabs.create({url: urlToOpen, active: false});
 	}
 
-	function sameWindowOpenURL(urlToOpen) {
+	function sameTabOpenURL(urlToOpen) {
 		console.log("Same window open URL");
 		console.log("URL is " + urlToOpen);
-		//window.location.href = "urlToOpen";
-		window.open(urlToOpen, "_self");
+		chrome.tabs.update({url: urlToOpen});
+		// Alternatives --
+		// window.location.href = "urlToOpen";
+		// window.open(urlToOpen, "_self");
 	}
 
 	function openPDF(number) {
 		var formattedNumber = formatNumberForPDF(number);
-		openURL(urlPatentPDF(formattedNumber));
-		// sameWindowOpenURL(urlPatentPDF(formattedNumber)); // Can't get this to work. Might come back to it later.
+		sameTabOpenURL(urlPatentPDF(formattedNumber)); // Opens in current tab.
+		// openURL(urlPatentPDF(formattedNumber)); // Previous. Would open in new tab.
 	}
 	
 	function openFullText(number) {
@@ -167,14 +169,33 @@ var QPS = (function () {
 		openURL(urlGooglePatents(formattedNumber));
 	}
 
+	function openPatentsByNumber(patentNumber) {
+		var message;
+		patentNumber = removePunctuation(patentNumber); 
+		if (validFormatUS(patentNumber) === true) {
+			openPDF(patentNumber);	// Just this for now.
+			// openFullText(patentNumber);	// Later
+			// openGooglePatent(patentNumber);	// Later
+			alert("Opening patent number \"" + patentNumber + "\"");
+		} else {
+			message = "Cannot open patent number " + patentNumber + ". " + "Try another patent number:";
+			patentNumber = window.prompt(message);
+			openPatentsByNumber(patentNumber);
+		}
+	}
+	// Check if that works even with popup --
+	// if not, might have to pass message to either background or content script.
+	
+	
+	
 	// Finally, return an object containing public methods.
 
 	return {
 		validate: validFormatUS, // Might change later if add international patent formats.
-		removePunctuation: removePunctuation,
 		openPDF: openPDF,
 		openFullText: openFullText,
-		openGooglePatent: openGooglePatent
+		openGooglePatent: openGooglePatent,
+		openPatentsByNumber: openPatentsByNumber
 	};
 
 }());
