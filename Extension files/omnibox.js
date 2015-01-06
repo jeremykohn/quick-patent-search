@@ -1,15 +1,17 @@
+/*
+	Copyright 2014-2015 Jeremy Kohn. 
+	All rights reserved.
+*/
+
 (function() {
 
 	"use strict";
-
-	console.log("And now in omnibox.js");
 
 	// chrome.omnibox.onInputStarted.addListener(function(){console.log("Input started.");});
 	// chrome.omnibox.onInputChanged.addListener(function(){console.log("Input changed.");});
 	// chrome.omnibox.onInputEntered.addListener(function(){console.log("Input entered.");});
 
 	chrome.omnibox.onInputEntered.addListener(function(input){
-		console.log("Added event listener.");
 		QPS.openPatentsByNumber(input); // This opens URL(s) by patent number, after validating input.
 	});
 

@@ -74,6 +74,21 @@ var QPS = (function () {
 		return number;
 	}
 	
+	function formatNumberForPDF(number) {
+		// Eight digits including 0's, and D if any.
+		number = removePrefixUS(number);
+		if (isUtilityPatent(number)) {
+			number = addLeadingZeros(number, 8);
+		} else if (isDesignPatent) {
+			number = removeTheD(number);
+			number = addLeadingZeros(number, 7);
+			number = "D" + number;
+		} else {
+			console.log("Can't format for PDF. Seens an invalid patent numbers slipped through the cracks.");
+		}
+		return number;
+	}
+	
 	function formatNumberForFullText(number) {
 		number = removePrefixUS(number);
 		if (isUtilityPatent(number)) {
@@ -88,21 +103,8 @@ var QPS = (function () {
 		return number;
 	}
 	
-	function formatNumberForPDF(number) {
-		// Eight digits including 0's, and D if any.
-		if (isUtilityPatent(number)) {
-			number = addLeadingZeros(number, 8);
-		} else if (isDesignPatent) {
-			number = removeTheD(number);
-			number = addLeadingZeros(number, 7);
-			number = "D" + number;
-		} else {
-			console.log("Can't format for PDF. Seens an invalid patent numbers slipped through the cracks.");
-		}
-		return number;
-	}
-	
 	function formatNumberForGooglePatents(number) {
+		number = removePrefixUS(number);
 		if (isUtilityPatent(number)) {
 			number = removeLeadingZeros(number);
 		} else if (isDesignPatent(number)) {
@@ -145,8 +147,6 @@ var QPS = (function () {
 	}
 
 	function sameTabOpenURL(urlToOpen) {
-		console.log("Same window open URL");
-		console.log("URL is " + urlToOpen);
 		chrome.tabs.update({url: urlToOpen});
 		// Alternatives --
 		// window.location.href = "urlToOpen";
@@ -156,7 +156,7 @@ var QPS = (function () {
 	function openPDF(number) {
 		var formattedNumber = formatNumberForPDF(number);
 		sameTabOpenURL(urlPatentPDF(formattedNumber)); // Opens in current tab.
-		// openURL(urlPatentPDF(formattedNumber)); // Previous. Would open in new tab.
+		// openURL(urlPatentPDF(formattedNumber)); // Previous. Creates new tab, opens URL there.
 	}
 	
 	function openFullText(number) {
@@ -169,32 +169,41 @@ var QPS = (function () {
 		openURL(urlGooglePatents(formattedNumber));
 	}
 
+	// function openPatentsInTabs(patentNumber, options) {
+		// Options should specify which formats to open the patents in. PDF, full text, Google, etc.
+		// Also whether to open in current tab or new tabs?
+		// Should omnibox always open in current tab, popup in new tabs?
+		// Or, type in keywords to omnibox, for example "US12345 google PDF fulltext" 
+		// Though would need to add more elaborate error handling.
+	// }
+
+	function openPatentList(patentNumber) {
+		openPDF(patentNumber);	// Just this for now.
+		// openFullText(simplifiedPatentNumber);	// Later
+		// openGooglePatent(simplifiedPatentNumber);	// Later
+	}
+
 	function openPatentsByNumber(patentNumber) {
-		var message;
-		patentNumber = removePunctuation(patentNumber); 
+		var originalPatentNumber,
+			newPatentNumber,
+			alertMessage,
+		    errorMessage;
+		originalPatentNumber = patentNumber;
+		patentNumber = removePunctuation(patentNumber);
 		if (validFormatUS(patentNumber) === true) {
-			openPDF(patentNumber);	// Just this for now.
-			// openFullText(patentNumber);	// Later
-			// openGooglePatent(patentNumber);	// Later
-			alert("Opening patent number \"" + patentNumber + "\"");
+			openPatentList(patentNumber); // Later, ability to add options? Like which formats to open patent in
+			alertMessage = "Opening U.S. patent " + removePrefixUS(patentNumber).toUpperCase() + ".";
+			alert(alertMessage);
 		} else {
-			message = "Cannot open patent number " + patentNumber + ". " + "Try another patent number:";
-			patentNumber = window.prompt(message);
-			openPatentsByNumber(patentNumber);
+			errorMessage = "Cannot open patent number " + originalPatentNumber + ". " + "Try another patent number:";
+			newPatentNumber = window.prompt(errorMessage);
+			openPatentsByNumber(newPatentNumber);
 		}
 	}
-	// Check if that works even with popup --
-	// if not, might have to pass message to either background or content script.
-	
-	
 	
 	// Finally, return an object containing public methods.
 
 	return {
-		validate: validFormatUS, // Might change later if add international patent formats.
-		openPDF: openPDF,
-		openFullText: openFullText,
-		openGooglePatent: openGooglePatent,
 		openPatentsByNumber: openPatentsByNumber
 	};
 
