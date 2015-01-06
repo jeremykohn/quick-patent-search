@@ -9,7 +9,7 @@ var QPS = (function () {
 	
 	// Patent numbers often include commas, spaces, etc. 
 	// Remove those before continuing.
-	// However, most other non-alphanumeric characters should produce an error.
+	// However, other non-alphanumeric characters should produce an error.
 
 	function removePunctuation(number) {
 		return number.replace(/[,.\-\'\"\`\s]/g, '');
@@ -39,10 +39,11 @@ var QPS = (function () {
 	}
 	
 	function addLeadingZeros(number, targetLength) {
-		var zerosToAdd = targetLength - number.length,
-			i;
-		if ((/[0-9]+/).test(number) === false) {
-		  console.log("Can't add leading zeros. Input number isn't a string with only numeric digits.");
+		var i, 
+			zerosToAdd = targetLength - number.length;
+		if ((/^[0-9]+$/).test(number) === false) {
+			console.log("Can't add leading zeros. Input number isn't a string with only numeric digits.");
+			return false;
 		}
 		for (i = 0; i < zerosToAdd; i += 1) {
 			number = "0" + number;
@@ -51,11 +52,12 @@ var QPS = (function () {
 	}
 	
 	function removeLeadingZeros(number) {
-		if ((/[0-9]+/).test(number) === false) {
+		var i, 
+			len = number.length;
+		if ((/^[0-9]+$/).test(number) === false) {
 			console.log("Can't remove leading zeros. Input number isn't a string with all numeric digits.");
+			return false;
 		}
-		var len = number.length,
-			i;
 		for (i = 0; i < len; i += 1) {
 			if (number[0] === "0") {
 				number = number.slice(1); 
@@ -63,13 +65,13 @@ var QPS = (function () {
 		}
 		return number;
 	}
-	// Remember there's an edge case where patent number is 0.
 	
 	function removeTheD(number) {
 		if (number[0] === 'D' || number[0] === 'd') {
 			number = number.slice(1);
 		} else {
-			console.log("It doesn't start with a D.");
+			console.log("removeTheD was called on something that doesn't start with a D.");
+			return false;
 		}
 		return number;
 	}
@@ -79,12 +81,13 @@ var QPS = (function () {
 		number = removePrefixUS(number);
 		if (isUtilityPatent(number)) {
 			number = addLeadingZeros(number, 8);
-		} else if (isDesignPatent) {
+		} else if (isDesignPatent(number)) {
 			number = removeTheD(number);
 			number = addLeadingZeros(number, 7);
 			number = "D" + number;
 		} else {
-			console.log("Can't format for PDF. Seens an invalid patent numbers slipped through the cracks.");
+			console.log("Can't format for PDF. Seens an invalid patent number slipped through the cracks.");
+			return false;
 		}
 		return number;
 	}
@@ -99,6 +102,7 @@ var QPS = (function () {
 			number = "D" + number;
 		} else {
 			console.log("Can't format for full text. Seems an invalid patent number slipped through the cracks.");
+			return false;
 		}
 		return number;
 	}
@@ -113,6 +117,7 @@ var QPS = (function () {
 			number = "D" + number;
 		} else {
 			console.log("Can't format for Google Patents. Seems an invalid patent number slipped through the cracks.");
+			return false;
 		}
 		return number;
 	}
@@ -169,18 +174,10 @@ var QPS = (function () {
 		openURL(urlGooglePatents(formattedNumber));
 	}
 
-	// function openPatentsInTabs(patentNumber, options) {
-		// Options should specify which formats to open the patents in. PDF, full text, Google, etc.
-		// Also whether to open in current tab or new tabs?
-		// Should omnibox always open in current tab, popup in new tabs?
-		// Or, type in keywords to omnibox, for example "US12345 google PDF fulltext" 
-		// Though would need to add more elaborate error handling.
-	// }
-
 	function openPatentList(patentNumber) {
 		openPDF(patentNumber);	// Just this for now.
-		// openFullText(simplifiedPatentNumber);	// Later
-		// openGooglePatent(simplifiedPatentNumber);	// Later
+		// openFullText(patentNumber);	// Later
+		// openGooglePatent(patentNumber);	// Later
 	}
 
 	function openPatentsByNumber(patentNumber) {
@@ -192,7 +189,7 @@ var QPS = (function () {
 		patentNumber = removePunctuation(patentNumber);
 		if (validFormatUS(patentNumber) === true) {
 			openPatentList(patentNumber); // Later, ability to add options? Like which formats to open patent in
-			alertMessage = "Opening U.S. patent " + removePrefixUS(patentNumber).toUpperCase() + ".";
+			alertMessage = "Opening U.S. patent " + removePrefixUS(patentNumber.toUpperCase()) + ".";
 			alert(alertMessage);
 		} else {
 			errorMessage = "Cannot open patent number " + originalPatentNumber + ". " + "Try another patent number:";
@@ -201,7 +198,8 @@ var QPS = (function () {
 		}
 	}
 	
-	// Finally, return an object containing public methods.
+	
+	// Finally, return an object containing only the public methods.
 
 	return {
 		openPatentsByNumber: openPatentsByNumber
