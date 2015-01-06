@@ -76,6 +76,20 @@ var QPS = (function () {
 		return number;
 	}
 	
+	function formatNumberForDisplay(number) {
+		if (isUtilityPatent(number)) {
+			number = removeLeadingZeros(removePrefixUS(number));
+		} else if (isDesignPatent(number)) {
+			number = removeTheD(removePrefixUS(number));
+			number = removeLeadingZeros(number);
+			number = "D" + number;
+		} else {
+			console.log("Invalid number. Cannot format it for display.");
+			return false;
+		}
+		return number;
+	}
+	
 	function formatNumberForPDF(number) {
 		// Eight digits including 0's, and D if any.
 		number = removePrefixUS(number);
@@ -183,14 +197,12 @@ var QPS = (function () {
 	function openPatentsByNumber(patentNumber) {
 		var originalPatentNumber,
 			newPatentNumber,
-			alertMessage,
 		    errorMessage;
 		originalPatentNumber = patentNumber;
 		patentNumber = removePunctuation(patentNumber);
 		if (validFormatUS(patentNumber) === true) {
 			openPatentList(patentNumber);
-			alertMessage = "Opening U.S. patent " + removePrefixUS(patentNumber.toUpperCase()) + ".";
-			alert(alertMessage);
+			alert("Opening U.S. patent " + formatNumberForDisplay(patentNumber) + ".");
 		} else {
 			errorMessage = "Cannot open patent number " + originalPatentNumber + ". " + "Try another patent number:";
 			newPatentNumber = window.prompt(errorMessage);
