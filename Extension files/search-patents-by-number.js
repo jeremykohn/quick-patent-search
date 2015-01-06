@@ -18,11 +18,15 @@ var QPS = (function () {
 	// Check for valid patent number formats.
 	
 	function isUtilityPatent(number) {
-		return (/^([Uu][Ss])?([0-9]{0,7}[1-9])$/).test(number);
+		var utilityPatternMatch = (/^([Uu][Ss])?([0-9]{1,8})$/).test(number);
+		var notZero = !(/^([Uu][Ss])?(0+)$/).test(number);
+		return utilityPatternMatch && notZero;
 	}
 	
 	function isDesignPatent(number) {
-		return (/^([Uu][Ss])?[Dd]([0-9]{0,6}[1-9])$/).test(number);
+		var designPatternMatch = (/^([Uu][Ss])?[Dd]([0-9]{1,7})$/).test(number);
+		var notZero = !(/^([Uu][Ss])?[Dd](0+)$/).test(number);
+		return designPatternMatch && notZero;
 	}
 	
 	function validFormatUS(number) {
